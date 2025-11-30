@@ -3719,7 +3719,79 @@ This Care-Giver AI Companion App represents the future of elderly care - combini
 ---
 
 **Made with ❤️ for Humanity**
-**Powered by Gemini 2.5, GCP, and React Native**
+**Powered by Gemini 2.5, GCP, React Native, and Arm AI**
 **Privacy-First | Multilingual | Voice-First | Care-First**
 
 ---
+
+# 🛠️ **INSTALLATION & SETUP GUIDE (ARM AI)**
+
+To run and develop this application with the new Arm-optimized AI features, you need the following environment setup.
+
+## **Prerequisites**
+
+1.  **Operating System**: Windows 10/11, macOS, or Linux.
+2.  **Node.js**: Version 18 or higher.
+3.  **Java Development Kit (JDK)**: **Version 17** (Critical for React Native 0.76+).
+    -   Recommended: Microsoft Build of OpenJDK 17 or Eclipse Temurin JDK 17.
+4.  **Android Studio**: Hedgehog or newer.
+    -   **SDK Platforms**: Android 14 (API 34).
+    -   **SDK Tools**: Android SDK Build-Tools 34.0.0, NDK (Side by side) 26.1.x, CMake 3.22.1.
+
+## **Setup Steps**
+
+1.  **Clone Repository**: Download the source code.
+2.  **Install Dependencies**: Run `npm install` in the root directory.
+3.  **Environment Variables**:
+    -   Create a `.env` file.
+    -   Add `HF_TOKEN` (HuggingFace Token) for model downloading.
+    -   Add `GEMINI_API_KEY` for cloud fallback.
+4.  **Download Models**:
+    -   The app will attempt to download models (Llama/Whisper) on the first run.
+    -   Ensure you have a stable internet connection for the initial setup (approx. 2GB download).
+
+## **Running the App**
+
+1.  **Start Metro Bundler**: `npm start`
+2.  **Run on Android**: `npm run android`
+    -   Ensure an Android Emulator or Physical Device is connected.
+    -   **Note**: Physical device recommended for AI performance testing.
+
+---
+
+# 🐞 **DEBUGGING & TESTING (ARM AI)**
+
+We have built specific tools to make debugging the AI components easier.
+
+## **Debug Mode**
+
+The app includes a hidden **Debug Screen** to monitor the internal state of the AI engine.
+
+**How to Access:**
+1.  Launch the app.
+2.  Look for the **Ladybug Icon (🐞)** on the bottom right of the screen.
+3.  Tap it to open the **Arm AI Debugger**.
+
+## **Debug Features**
+
+-   **Model Status**: Shows which model is currently loaded (e.g., "LLAMA_3.2_3B", "GEMMA_2B", or "RULE_BASED").
+-   **Device Capabilities**: Displays RAM and CPU info to verify if "Low-End Device" mode is active.
+-   **Real-Time Logs**: View internal logs from the Native Module (e.g., "Loading model...", "Inference time: 150ms").
+-   **Test Chat**: A simple text input to send queries directly to the AI engine and see the raw response.
+
+## **Testing Scenarios**
+
+1.  **High-End Device Test**:
+    -   Run on a phone with >6GB RAM.
+    -   Verify "LLAMA_3.2_3B" is loaded.
+    -   Ask complex questions and check response quality.
+
+2.  **Low-End Device Test**:
+    -   Run on a phone (or emulator) with <6GB RAM.
+    -   Verify "GEMMA_2B" or "RULE_BASED" is loaded.
+    -   Check if basic commands (Medicine, Help) still work.
+
+3.  **Offline Test**:
+    -   Turn off WiFi/Data.
+    -   Verify that Voice and Chat still respond using the on-device models.
+
