@@ -1,5 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 import { ModelDownloader } from './ModelDownloader';
+import { SECRETS } from '../config/secrets';
 
 const { NativeAIModule } = NativeModules;
 
@@ -26,6 +27,8 @@ export class AIService {
     return AIService.instance;
   }
 
+
+
   async initialize(): Promise<void> {
     try {
       console.log('Initializing AI Service...');
@@ -39,6 +42,14 @@ export class AIService {
       console.log('Device Capabilities:', capabilities);
 
       this.isLowEndDevice = capabilities.isLowRam || capabilities.totalMemory < 6 * 1024 * 1024 * 1024; // < 6GB
+
+      if (SECRETS.API_FLAG === 0) {
+        console.log('OFFLINE MODE ENABLED (API_FLAG=0). Using only on-device models.');
+        // In offline mode, we strictly use the downloaded models.
+        // loadBestModel already handles downloading if missing.
+      } else {
+        console.log('HYBRID MODE ENABLED. Cloud services may be used.');
+      }
 
       await this.loadBestModel();
     } catch (error) {

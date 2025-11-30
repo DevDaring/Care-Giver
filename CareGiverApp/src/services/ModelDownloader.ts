@@ -1,9 +1,10 @@
 import { Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 
-// HF Token provided by user
-// HF Token should be loaded from secure storage or env
-const HF_TOKEN = "YOUR_HUGGING_FACE_TOKEN";
+import { SECRETS } from '../config/secrets';
+
+// HF Token loaded from secrets file
+const HF_TOKEN = SECRETS.HF_TOKEN;
 
 const MODELS = {
   'llama-3.2-3b-instruct-q4_k_m.gguf': 'https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf',

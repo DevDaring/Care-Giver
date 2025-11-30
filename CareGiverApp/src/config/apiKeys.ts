@@ -2,18 +2,13 @@
 // WARNING: DO NOT commit this file with real API keys
 // Use environment variables in production
 
-import {
-  GEMINI_API_KEY,
-  GCP_PROJECT_ID,
-  GCP_TTS_API_KEY,
-  GCP_STT_API_KEY,
-} from '@env';
+import { SECRETS } from './secrets';
 
 export const API_KEYS = {
-  gemini: GEMINI_API_KEY || '',
-  gcpProjectId: GCP_PROJECT_ID || '',
-  gcpTts: GCP_TTS_API_KEY || '',
-  gcpStt: GCP_STT_API_KEY || '',
+  gemini: SECRETS.GEMINI_API_KEY || '',
+  gcpProjectId: SECRETS.GCP_PROJECT_ID || '',
+  gcpTts: SECRETS.GCP_TTS_API_KEY || '',
+  gcpStt: SECRETS.GCP_STT_API_KEY || '',
 };
 
 export const validateApiKeys = (): {isValid: boolean; missing: string[]} => {
