@@ -1,32 +1,26 @@
 apply plugin: "com.android.application"
-apply plugin: "com.facebook.react"
+apply plugin: "org.jetbrains.kotlin.android"
+
+def enableProguardInReleaseBuilds = false
 
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-
     namespace "com.caregiverapp"
+
     defaultConfig {
         applicationId "com.caregiverapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-
-        externalNativeBuild {
-            cmake {
-                cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
-                abiFilters 'arm64-v8a', 'x86_64'
-            }
-        }
-    }
-    
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
-        }
+        
+        missingDimensionStrategy 'react-native-camera', 'general'
+        
+        // BuildConfig fields for React Native
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false"
+        buildConfigField "boolean", "IS_HERMES_ENABLED", "true"
     }
 
     signingConfigs {
@@ -37,27 +31,45 @@ android {
             keyPassword 'android'
         }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
             signingConfig signingConfigs.debug
-            minifyEnabled false
+            minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    
+    kotlinOptions {
+        jvmTarget = "17"
     }
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android")
-    implementation("com.facebook.react:flipper-integration")
-
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
+    // React Native core
+    implementation("com.facebook.react:react-android:${rootProject.ext.reactNativeVersion}")
+    implementation("com.facebook.react:hermes-android:${rootProject.ext.reactNativeVersion}")
+    
+    // Manual linked modules
+    implementation project(':react-native-voice')
+    implementation project(':react-native-camera')
+    implementation project(':react-native-maps')
+    implementation project(':react-native-tts')
+    implementation project(':react-native-gesture-handler')
+    implementation project(':react-native-screens')
+    implementation project(':react-native-safe-area-context')
+    implementation project(':react-native-reanimated')
+    implementation project(':react-native-fs')
 }
-
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

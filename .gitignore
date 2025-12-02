@@ -1,2 +1,42 @@
+# Secret files - NEVER COMMIT THESE
 CareGiverApp/src/config/secrets.ts
 CareGiverApp/src/config/speech_key.json
+**/secrets.ts
+**/speech_key.json
+*.keystore
+!debug.keystore
+
+# API Keys
+.env
+.env.local
+.env.production
+*.pem
+*.key
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Android
+CareGiverApp/android/.gradle/
+CareGiverApp/android/app/build/
+CareGiverApp/android/build/
+*.apk
+*.aab
+local.properties
+
+# iOS
+CareGiverApp/ios/Pods/
+CareGiverApp/ios/build/
+
+# Metro
+.metro-health-check*
+
+# Misc
+.DS_Store
+.idea/
+*.iml
+.vscode/
+*.log

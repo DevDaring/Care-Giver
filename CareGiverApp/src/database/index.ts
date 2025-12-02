@@ -1,51 +1,65 @@
-// Database initialization and management
+// MOCK Database for prototype - uses in-memory storage
+// Replace with real SQLite when native modules work
 
-import SQLite from 'react-native-sqlite-storage';
-import {DATABASE} from '@/config/constants';
-import {ALL_TABLES} from './schema';
+console.log('[Database] Using in-memory mock database for prototype');
 
-// Enable debugging in development
-SQLite.DEBUG(__DEV__);
-SQLite.enablePromise(true);
+// In-memory storage
+const storage: Record<string, any[]> = {
+  users: [],
+  contacts: [],
+  alarms: [],
+  chat_messages: [],
+  stories: [],
+  admin_restrictions: [],
+  activity_logs: [],
+  settings: [],
+  geofences: [],
+};
 
-let databaseInstance: SQLite.SQLiteDatabase | null = null;
+// Mock database instance
+const mockDb = {
+  executeSql: async (sql: string, params?: any[]) => {
+    console.log('[MockDB] SQL:', sql.substring(0, 50) + '...');
+    return [{ rows: { length: 0, item: () => null, raw: () => [] } }];
+  },
+  close: async () => {
+    console.log('[MockDB] Database closed');
+  },
+};
+
+let databaseInstance: typeof mockDb | null = null;
 
 /**
- * Initialize and open database connection
+ * Initialize mock database
  */
-export const initDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
+export const initDatabase = async () => {
   if (databaseInstance) {
     return databaseInstance;
   }
 
-  try {
-    console.log('Initializing database...');
-    const db = await SQLite.openDatabase({
-      name: DATABASE.name,
-      location: DATABASE.location,
+  console.log('[MockDB] Initializing mock database...');
+  
+  // Initialize with default data if needed
+  if (storage.users.length === 0) {
+    storage.users.push({
+      id: 'default-user',
+      name: 'User',
+      role: 'USER',
+      language: 'en',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     });
-
-    console.log('Database opened successfully');
-
-    // Create all tables
-    for (const tableSQL of ALL_TABLES) {
-      await db.executeSql(tableSQL);
-    }
-
-    console.log('All tables created successfully');
-
-    databaseInstance = db;
-    return db;
-  } catch (error) {
-    console.error('Error initializing database:', error);
-    throw error;
   }
+
+  databaseInstance = mockDb;
+  console.log('[MockDB] Mock database initialized successfully');
+  return databaseInstance;
 };
 
 /**
  * Get database instance
  */
-export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
+export const getDatabase = async () => {
   if (!databaseInstance) {
     return await initDatabase();
   }
@@ -57,44 +71,56 @@ export const getDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
  */
 export const closeDatabase = async (): Promise<void> => {
   if (databaseInstance) {
-    await databaseInstance.close();
     databaseInstance = null;
-    console.log('Database closed successfully');
+    console.log('[MockDB] Database closed');
   }
 };
 
 /**
- * Drop all tables (use with caution, for development only)
+ * Drop all tables (clears storage)
  */
 export const dropAllTables = async (): Promise<void> => {
-  const db = await getDatabase();
-  const tables = [
-    'users',
-    'contacts',
-    'alarms',
-    'chat_messages',
-    'stories',
-    'admin_restrictions',
-    'activity_logs',
-    'settings',
-    'geofences',
-  ];
-
-  for (const table of tables) {
-    await db.executeSql(`DROP TABLE IF EXISTS ${table};`);
-  }
-
-  console.log('All tables dropped');
+  Object.keys(storage).forEach(key => {
+    storage[key] = [];
+  });
+  console.log('[MockDB] All tables cleared');
 };
 
 /**
- * Reset database (drop and recreate)
+ * Reset database
  */
 export const resetDatabase = async (): Promise<void> => {
   await dropAllTables();
   await closeDatabase();
   await initDatabase();
-  console.log('Database reset successfully');
+  console.log('[MockDB] Database reset');
+};
+
+// Simple CRUD helpers for prototype
+export const mockStorage = {
+  getAll: (table: string) => storage[table] || [],
+  getById: (table: string, id: string) => storage[table]?.find((item: any) => item.id === id),
+  insert: (table: string, item: any) => {
+    if (!storage[table]) storage[table] = [];
+    storage[table].push(item);
+    return item;
+  },
+  update: (table: string, id: string, updates: any) => {
+    const index = storage[table]?.findIndex((item: any) => item.id === id);
+    if (index !== -1) {
+      storage[table][index] = { ...storage[table][index], ...updates };
+      return storage[table][index];
+    }
+    return null;
+  },
+  delete: (table: string, id: string) => {
+    const index = storage[table]?.findIndex((item: any) => item.id === id);
+    if (index !== -1) {
+      storage[table].splice(index, 1);
+      return true;
+    }
+    return false;
+  },
 };
 
 export default {
@@ -103,4 +129,5 @@ export default {
   closeDatabase,
   dropAllTables,
   resetDatabase,
+  mockStorage,
 };
